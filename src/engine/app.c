@@ -123,7 +123,7 @@ void app_toggle_fullscreen()
 
 /// Initialize application
 /// > An error code, 0 on success, 1 on error
-int app_init(SCENE* arrScenes, int count)
+int app_init(SCENE* arrScenes, int count, const char* assPath)
 {
     // Init SDL
     if(app_init_SDL() != 0)
@@ -293,7 +293,7 @@ void app_destroy()
 /// > An error code, 0 on success, 1 on error
 int app_run(SCENE* arrScenes, int count)
 {
-    if(app_init(arrScenes,count) != 0) return 1;
+    if(app_init(arrScenes,count,NULL) != 0) return 1;
 
     while(isRunning)
     {

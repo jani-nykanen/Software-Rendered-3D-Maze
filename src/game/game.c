@@ -7,6 +7,7 @@
 #include "../engine/bitmap.h"
 #include "../engine/transform.h"
 #include "../engine/controls.h"
+#include "../engine/assets.h"
 
 #include "camera.h"
 
@@ -14,6 +15,8 @@
 static BITMAP* texWall;
 /// Figure
 static BITMAP* bmpFigure;
+/// HUD
+static BITMAP* bmpHud;
 
 /// Game camera
 static CAMERA cam;
@@ -21,17 +24,9 @@ static CAMERA cam;
 /// Init game
 static int game_init()
 {
-    texWall = load_bitmap("assets/textures/wall.png");
-    if(texWall == NULL)
-    {
-        return 1;
-    }
-
-    bmpFigure = load_bitmap("assets/textures/figure.png");
-    if(bmpFigure == NULL)
-    {
-        return 1;
-    }
+    texWall = get_bitmap("wall");
+    bmpFigure = get_bitmap("figure");
+    bmpHud = get_bitmap("hud");
 
     // Init camera
     cam.pos = vec3(0.0f,0.0f,4.0f);
@@ -74,12 +69,26 @@ static void game_update(float tm)
         cam.pos.z += cos(cam.angle - M_PI/2.0f) * 0.05f * tm;
         cam.pos.x += sin(cam.angle - M_PI/2.0f) * 0.05f * tm;
     }
+
+    // Limit camera
+    if(cam.pos.z < -4.0f + 0.95f)
+        cam.pos.z = -4.0f +0.95f;
+    else if(cam.pos.z > +4.0f - 0.95f)
+        cam.pos.z = 4.0f -0.95f;
+
+    if(cam.pos.x < -4.0f + 0.95f)
+        cam.pos.x = -4.0f +0.95f;
+    else if(cam.pos.x > +4.0f - 0.95f)
+        cam.pos.x = 4.0f -0.95f;
 }
 
 /// Draw game
 static void game_draw()
 {
-    clear_frame(0b00101010);
+    set_floor_level(16);
+
+    clear_frame(0b00010101);
+    fill_rect(0,96,256,96,0b00101010);
     clear_depth();
 
     tr_identity();
@@ -87,25 +96,31 @@ static void game_draw()
 
     bind_texture(texWall);
 
-    draw_wall(vec2(-1.0f,2.0f),vec2(0.0f,2.0f),2.0f);
-    draw_wall(vec2(0.0f,2.0f),vec2(1.0f,2.0f),2.0f);
-
-    draw_wall(vec2(-1.0f,-2.0f),vec2(0.0f,-2.0f),2.0f);
-    draw_wall(vec2(0.0f,-2.0f),vec2(1.0f,-2.0f),2.0f);
+    const float w = 1.0f;
+    int i = 0;
+    for(i=-4; i <= 3; i++)
+    {
+        draw_wall(vec2(i*w,4.0f),vec2( (i+1)*w,4.0f),1.5f);
+        draw_wall(vec2(i*w,-4.0f),vec2( (i+1)*w,-4.0f),1.5f);
+        draw_wall(vec2(-4.0f,i*w),vec2( -4.0f,(i+1)*w),1.5f);
+        draw_wall(vec2(4.0f,i*w),vec2( 4.0f,(i+1)*w),1.5f);
+    }
 
     VEC3 p1 = tr_use_transform(vec3(0.0f,1.0f,0.0f));
     VEC3 p2 = tr_use_transform(vec3(0.5f,1.0f,0.5f));
 
     if(p1.z > p2.z)
     {
-        draw_sprite_3D(bmpFigure,vec3(0.0f,1.0f,0.0f),1.5f,1.5f);
-        draw_sprite_3D(bmpFigure,vec3(0.5f,1.0f,0.5f),1.5f,1.5f);
+        draw_sprite_3D(bmpFigure,vec3(0.0f,1.0f,0.0f),1.0f,1.0f);
+        draw_sprite_3D(bmpFigure,vec3(1.5f,1.0f,0.5f),1.0f,1.0f);
     }
     else
     {
-        draw_sprite_3D(bmpFigure,vec3(0.5f,1.0f,0.5f),1.5f,1.5f);
-        draw_sprite_3D(bmpFigure,vec3(0.0f,1.0f,0.0f),1.5f,1.5f);
+        draw_sprite_3D(bmpFigure,vec3(1.5f,1.0f,0.5f),1.0f,1.0f);
+        draw_sprite_3D(bmpFigure,vec3(0.0f,1.0f,0.0f),1.0f,1.0f);
     }
+
+    draw_bitmap(bmpHud,0,192);
 }
 
 /// Destroy game

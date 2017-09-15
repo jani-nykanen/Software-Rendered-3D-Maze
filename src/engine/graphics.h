@@ -90,10 +90,17 @@ void draw_wall(VEC2 a, VEC2 b, float height);
 /// < h Height
 void draw_sprite_3D(BITMAP* bmp, VEC3 p, float w, float h);
 
-/// Set wall options
-/// < ytrans Vertical translation
-/// < viewHeight View height
-void set_wall_options(int ytrans, int viewHeight);
+/// Fill rectangle
+/// < x X coordinate
+/// < y Y coordinate
+/// < w Width
+/// < h Height
+/// < index Color index
+void fill_rect(int x, int y, int w, int h, Uint8 index);
+
+/// Set floor level (0 by default)
+/// < level Floor level
+void set_floor_level(int level);
 
 /// Bind texture
 /// < tex Texture to bind

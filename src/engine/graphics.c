@@ -7,6 +7,9 @@
 
 #include "malloc.h"
 
+/// Min delta
+static const float DEPTH_MIN = 0.025f;
+
 /// Global renderer
 static SDL_Renderer* grend;
 /// Global frame
@@ -14,10 +17,8 @@ static FRAME* gframe;
 /// Window dim
 static SDL_Point windowDim;
 
-/// Wall y translation
-static int wallYtrans;
-/// Wall view height modifier
-static int wallVHeight;
+/// Floor level
+static int floorLevel;
 
 /// Texture used in triangle rendering
 static BITMAP* texture;
@@ -69,8 +70,7 @@ SDL_Point get_dimensions()
 void bind_frame(FRAME* fr)
 {
     gframe = fr; 
-    wallYtrans = 0;
-    wallVHeight = fr->h;
+    floorLevel = 0;
 }
 
 /// Clear frame
@@ -192,6 +192,7 @@ void draw_triangle_3d(VEC3 a, VEC3 b, VEC3 c)
 }
 
 /// Draw a wall
+/// @TODO Check out the final line of the bitmap, make sure no segfaults!
 void draw_wall(VEC2 a, VEC2 b, float height)
 {
     // Need explanation? Too bad, you won't get any!
@@ -205,7 +206,7 @@ void draw_wall(VEC2 a, VEC2 b, float height)
     VEC3 pb = tr_use_transform(b3);
 
     // Too close the camera
-    if(pa.z < 0.1 || pb.z < 0.1) return;
+    if(pa.z < DEPTH_MIN || pb.z < DEPTH_MIN) return;
 
     float xhop = (float)gframe->w / (float) gframe->h;
     float yhop = 1.0f;
@@ -221,8 +222,8 @@ void draw_wall(VEC2 a, VEC2 b, float height)
     x2 *= gframe->w / (xhop*2);
     y2 *= gframe->h / (yhop*2);
 
-    float y3 = wallVHeight/2 - fabs(y1 - wallVHeight/2);
-    float y4 = wallVHeight/2 - fabs(y2 - wallVHeight/2);
+    float y3 = gframe->h/2 - fabs(y1 - gframe->h/2);
+    float y4 = gframe->h/2 - fabs(y2 - gframe->h/2);
 
     int minx = min(x1,x2);
     int miny = min(y3,y4);
@@ -270,7 +271,7 @@ void draw_wall(VEC2 a, VEC2 b, float height)
         {
             for(dy=starty; dy <= endy; dy += 1.0f)
             {
-                put_pixel((int)dx,(int)dy,
+                put_pixel((int)dx,(int)dy - floorLevel,
                     cond ? texture->data[(int)ty * texture->w + (int)tx ]
                     : texture->data[(int)ty * texture->w + (texture->w - (int)tx  -1)]);
                     
@@ -300,7 +301,7 @@ void draw_sprite_3D(BITMAP* b, VEC3 p, float w, float h)
     VEC3 pp = tr_use_transform(p);
 
     // Too close the camera
-    if(pp.z < 0.1) return;
+    if(pp.z < DEPTH_MIN) return;
 
     float xhop = (float)gframe->w / (float) gframe->h;
     float yhop = 1.0f;
@@ -314,7 +315,7 @@ void draw_sprite_3D(BITMAP* b, VEC3 p, float w, float h)
 
     float sx = 1.0f/pp.z * w;
     float sy = 1.0f/pp.z * h;
-    
+
     int dx = fx - sx * b->w/2;
     int dy = fy - sy * b->h;
 
@@ -336,7 +337,7 @@ void draw_sprite_3D(BITMAP* b, VEC3 p, float w, float h)
                 px = (int)(pxf);
                 py = (int)(pyf);
 
-                put_pixel(x,y, b->data[py*b->w +px]);
+                put_pixel(x,y -floorLevel, b->data[py*b->w +px]);
                 pyf += 1.0f/sy;
             }
 
@@ -347,11 +348,26 @@ void draw_sprite_3D(BITMAP* b, VEC3 p, float w, float h)
     } 
 }
 
-/// Set wall options
-void set_wall_options(int ytrans, int viewHeight)
+/// Fill rectangle
+void fill_rect(int x, int y, int w, int h, Uint8 index)
 {
-    wallYtrans = ytrans;
-    wallVHeight = viewHeight;
+    int dx = x;
+    int dy = y;
+
+    for(; dy < y+h; dy++)
+    {
+        for(dx = x; dx < x+w; dx++)
+        {
+            put_pixel(dx,dy,index);
+        }
+    }
+}
+
+/// Set floor level (0 by default)
+/// < level Floor level
+void set_floor_level(int level)
+{
+    floorLevel = level;
 }
 
 /// Bind texture

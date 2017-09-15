@@ -1,0 +1,4 @@
+# A list of assets
+bitmap figure assets/bitmaps/figure.png
+bitmap wall assets/bitmaps/wall.png
+bitmap hud assets/bitmaps/hud.png
