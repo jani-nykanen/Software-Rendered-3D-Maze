@@ -276,6 +276,8 @@ void draw_wall(VEC2 a, VEC2 b, float height)
                     : texture->data[(int)ty * texture->w + (texture->w - (int)tx  -1)]);
                     
                 ty += tstepy;
+                if((int)ty >= texture->h)
+                    ty = texture->h -1.0f;
             }
             gframe->depth[x] = depth;
         }

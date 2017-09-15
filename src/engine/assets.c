@@ -136,8 +136,6 @@ static int load_from_list()
 
                 if(assType == T_BITMAP)
                 {
-                    printf("Loading a bitmap called %s ",path);
-                    printf("in %s.\n",path);
 
                     BITMAP* b = load_bitmap(path);
                     if(b == NULL)

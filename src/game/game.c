@@ -10,6 +10,8 @@
 #include "../engine/assets.h"
 
 #include "camera.h"
+#include "objcontrol.h"
+#include "../vpad.h"
 
 /// Brick wall texture
 static BITMAP* texWall;
@@ -31,6 +33,12 @@ static int game_init()
     // Init camera
     cam.pos = vec3(0.0f,0.0f,4.0f);
     cam.angle = 0.0f;
+
+    // Init object control
+    init_object_control();
+
+    // Init vpad
+    vpad_init();
     
     return 0;
 }
@@ -39,47 +47,8 @@ static int game_init()
 /// tm Time multiplier
 static void game_update(float tm)
 {
-    if(get_key_state((int)SDL_SCANCODE_LEFT) == DOWN)
-    {
-        cam.angle -= 0.025f * tm;
-    }
-    else if(get_key_state((int)SDL_SCANCODE_RIGHT) == DOWN)
-    {
-        cam.angle += 0.025f * tm;
-    }
-
-    if(get_key_state((int)SDL_SCANCODE_W) == DOWN)
-    {
-        cam.pos.z -= cos(cam.angle) * 0.05f * tm;
-        cam.pos.x -= sin(cam.angle) * 0.05f * tm;
-    }
-    else if(get_key_state((int)SDL_SCANCODE_S) == DOWN)
-    {
-        cam.pos.z += cos(cam.angle) * 0.05f * tm;
-        cam.pos.x += sin(cam.angle) * 0.05f * tm;
-    }
-    
-    if(get_key_state((int)SDL_SCANCODE_A) == DOWN)
-    {
-        cam.pos.z -= cos(cam.angle - M_PI/2.0f) * 0.05f * tm;
-        cam.pos.x -= sin(cam.angle - M_PI/2.0f) * 0.05f * tm;
-    }
-    else if(get_key_state((int)SDL_SCANCODE_D) == DOWN)
-    {
-        cam.pos.z += cos(cam.angle - M_PI/2.0f) * 0.05f * tm;
-        cam.pos.x += sin(cam.angle - M_PI/2.0f) * 0.05f * tm;
-    }
-
-    // Limit camera
-    if(cam.pos.z < -4.0f + 0.95f)
-        cam.pos.z = -4.0f +0.95f;
-    else if(cam.pos.z > +4.0f - 0.95f)
-        cam.pos.z = 4.0f -0.95f;
-
-    if(cam.pos.x < -4.0f + 0.95f)
-        cam.pos.x = -4.0f +0.95f;
-    else if(cam.pos.x > +4.0f - 0.95f)
-        cam.pos.x = 4.0f -0.95f;
+    update_obj_control(&cam,tm);
+    vpad_update();
 }
 
 /// Draw game
