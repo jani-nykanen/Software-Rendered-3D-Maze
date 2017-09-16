@@ -15,7 +15,7 @@ static void pl_control(PLAYER* pl, float tm)
     // Rotate
     if(fabs(stick.x) > 0.1f)
     {
-        pl->angle += stick.x * 0.05f * tm;
+        pl->angle += stick.x * pl->maxSpeed * tm;
     }
 
     if(fabs(stick.y) > 0.1f)
@@ -69,8 +69,8 @@ PLAYER create_player(VEC2 pos)
     pl.speed = vec2(0.0f,0.0f);
     pl.target = pl.speed;
     pl.angle = 0.0f;
-    pl.speedMul = 0.05f;
-    pl.maxSpeed = 0.055f;
+    pl.speedMul = 0.01f;
+    pl.maxSpeed = 0.05f;
     pl.radius = 0.95f;
 
     return pl;
