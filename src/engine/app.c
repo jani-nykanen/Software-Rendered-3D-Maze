@@ -234,6 +234,8 @@ void app_events()
 void app_update(Uint32 delta)
 {
     float tm = (float)((float)delta/1000.0f) / (1.0f/60.0f);
+    /// Limit tm (in other words, limit minimum fps)
+    if(tm > 5.0) tm = 5.0;
 
     // Quit
     if(get_key_state(SDL_SCANCODE_LCTRL) == DOWN &&

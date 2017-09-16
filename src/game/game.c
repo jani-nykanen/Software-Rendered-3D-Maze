@@ -16,17 +16,12 @@
 
 #include "../vpad.h"
 
-/// Figure
-static BITMAP* bmpFigure;
-
 /// Game camera
 static CAMERA cam;
 
 /// Init game
 static int game_init()
 {
-    bmpFigure = get_bitmap("figure");
-
     // Init camera
     cam.pos = vec3(0.0f,0.0f,4.0f);
     cam.angle = 0.0f;
@@ -62,20 +57,7 @@ static void game_draw()
     use_camera(&cam);
 
     stage_draw();
-
-    VEC3 p1 = tr_use_transform(vec3(0.0f,1.0f,0.0f));
-    VEC3 p2 = tr_use_transform(vec3(0.5f,1.0f,0.5f));
-
-    if(p1.z > p2.z)
-    {
-        draw_sprite_3D(bmpFigure,vec3(0.0f,1.0f,0.0f),1.0f,1.0f);
-        draw_sprite_3D(bmpFigure,vec3(1.5f,1.0f,0.5f),1.0f,1.0f);
-    }
-    else
-    {
-        draw_sprite_3D(bmpFigure,vec3(1.5f,1.0f,0.5f),1.0f,1.0f);
-        draw_sprite_3D(bmpFigure,vec3(0.0f,1.0f,0.0f),1.0f,1.0f);
-    }
+    draw_objects();
 
     hud_draw();
 }

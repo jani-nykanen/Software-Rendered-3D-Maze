@@ -38,5 +38,7 @@ void obj_calculate_depth(OBJECT* o)
 /// Draw object
 void obj_draw(OBJECT* o)
 {
+    if(o->texture == NULL) return;
+
     draw_sprite_3D(o->texture,o->pos,o->w,o->h);
 }
