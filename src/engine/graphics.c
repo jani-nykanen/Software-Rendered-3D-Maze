@@ -20,8 +20,10 @@ static SDL_Point windowDim;
 /// Floor level
 static int floorLevel;
 
-/// Texture used in triangle rendering
+/// Texture used in wall rendering
 static BITMAP* texture;
+/// Wall lines
+static bool wallLines[4];
 
 /// Put pixel to the screen
 /// < x X coordinate
@@ -293,6 +295,12 @@ void draw_wall(VEC2 a, VEC2 b, float height)
 
         depth += depthStep * stepx;
     }
+
+    // Draw lines
+    if(wallLines[0]) draw_line(x1,y1 - floorLevel,x2,y2 - floorLevel,0);
+    if(wallLines[1]) draw_line(x1,y3-1 - floorLevel,x2,y4-1 - floorLevel,0);
+    if(wallLines[2]) fill_rect(x1,y3 -floorLevel,1,y1-y3+1,0);
+    if(wallLines[3]) fill_rect(x2,y4 -floorLevel,1,y2-y4+1,0);
 }
 
 /// Draw a 3D sprite to a position p
@@ -365,11 +373,40 @@ void fill_rect(int x, int y, int w, int h, Uint8 index)
     }
 }
 
+/// Draw line
+void draw_line(int x1, int y1, int x2, int y2, Uint8 index)
+{
+    int x0 = x1;
+    int y0 = y1;
+        
+    int dx = abs(x2-x0), sx = x0<x2 ? 1 : -1;
+    int dy = abs(y2-y0), sy = y0<y2 ? 1 : -1; 
+    int err = (dx>dy ? dx : -dy)/2, e2;
+        
+    for(;;)
+    {
+        put_pixel(x0,y0,index);
+        if (x0==x2 && y0==y2) break;
+        e2 = err;
+        if (e2 >-dx) { err -= dy; x0 += sx; }
+        if (e2 < dy) { err += dx; y0 += sy; }
+    }
+}
+
 /// Set floor level (0 by default)
 /// < level Floor level
 void set_floor_level(int level)
 {
     floorLevel = level;
+}
+
+/// Set wall lines
+void set_wall_lines(bool bottom, bool top, bool near, bool far)
+{
+    wallLines[0] = bottom;
+    wallLines[1] = top;
+    wallLines[2] = near;
+    wallLines[3] = far;
 }
 
 /// Bind texture

@@ -98,9 +98,24 @@ void draw_sprite_3D(BITMAP* bmp, VEC3 p, float w, float h);
 /// < index Color index
 void fill_rect(int x, int y, int w, int h, Uint8 index);
 
+/// Draw line
+/// < x1 First X coordinate
+/// < y1 First Y coordinate
+/// < x2 Second X coordinate
+/// < y2 Second Y coordinate
+/// < index Color index
+void draw_line(int x1, int y1, int x2, int y2, Uint8 index);
+
 /// Set floor level (0 by default)
 /// < level Floor level
 void set_floor_level(int level);
+
+/// Set wall lines
+/// < bottom Bottom line
+/// < top Top line
+/// < near Near line
+/// < far Far line
+void set_wall_lines(bool bottom, bool top, bool near, bool far);
 
 /// Bind texture
 /// < tex Texture to bind
