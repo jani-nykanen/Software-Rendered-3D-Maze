@@ -16,4 +16,7 @@ int load_assets(const char* path);
 /// > A bitmap, NULL if not exist
 BITMAP* get_bitmap(const char* name);
 
+/// Destroy loaded asset files
+void destroy_assets();
+
 #endif // __ASSETS__

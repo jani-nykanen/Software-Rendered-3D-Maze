@@ -4,7 +4,69 @@
 #include "engine/app.h"
 #include "game/game.h"
 
+#include "engine/list.h"
 #include "engine/assets.h"
+
+#include "stdlib.h"
+
+/// Configuration
+static CONFIG c;
+/// Asset path
+static char assPath[256];
+
+/// Read configuration file
+/// < path Path
+/// > 0 on success, 1 on error
+static int read_config(const char* path)
+{
+    if(load_list(path) != 0)
+    {
+        return 1;
+    }
+
+    char* param;
+    char* value;
+    int count = 0;
+
+    int i = 0;
+    for(; i <= get_list_word_count(); i++)
+    {
+        if(count == 0)
+        {
+            param = get_list_word(i).data;
+            count ++;
+        }
+        else if(count == 1)
+        {
+            value = get_list_word(i).data;
+
+            if(strcmp(param,"win_width") == 0)
+            {
+                c.winWidth = atoi(value);
+            }
+            else if(strcmp(param,"win_height") == 0)
+            {
+                c.winHeight = atoi(value);
+            }
+            else if(strcmp(param,"fullscreen") == 0)
+            {
+                c.fullscreen = atoi(value);
+            }
+            else if(strcmp(param,"fps") == 0)
+            {
+                c.fps = atoi(value);
+            }
+            else if(strcmp(param,"asset_path") == 0)
+            {
+                strcpy(assPath,value);
+            }
+
+            count = 0;
+        }
+    }
+
+    return 0;
+}
 
 /// Main function
 /// < argc Argument count
@@ -18,11 +80,18 @@ int main(int argc, char** argv)
     };
     int sceneCount = 1;
 
-    // Load assets
-    if(load_assets("assets/assets.list") != 0)
+    // Load config
+    
+    if(read_config("config.list") != 0)
     {
         return 1;
     }
 
-    return app_run(scenes,sceneCount);
+    // Load assets
+    if(load_assets(assPath) != 0)
+    {
+        return 1;
+    }
+
+    return app_run(scenes,sceneCount,c);
 }

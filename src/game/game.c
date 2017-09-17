@@ -65,7 +65,7 @@ static void game_draw()
 /// Destroy game
 static void game_destroy()
 {
-
+    destroy_assets();
 }
 
 /// Get game scene

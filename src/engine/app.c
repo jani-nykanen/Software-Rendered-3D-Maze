@@ -41,11 +41,14 @@ static SCENE scenes[16];
 static Uint8 sceneCount;
 
 /// Wait time
-static const int FRAME_WAIT = 33;
+static int frame_wait;
 /// Canvas width (@todo Read from an external file)
 static const int CANVAS_WIDTH = 256;
 /// Canvas height
 static const int CANVAS_HEIGHT = 224;
+
+/// Configuration
+static CONFIG config;
 
 /// Calculate canvas size and position on screen
 /// < winWidth Window width
@@ -83,9 +86,9 @@ static int app_init_SDL()
     }
 
     // Create window
-    // TODO: Load default values from config file
-    int windowWidth = 512;
-    int windowHeight = 448;
+
+    int windowWidth = config.winWidth;
+    int windowHeight = config.winHeight;
 
     set_dimensions(windowWidth,windowHeight);
 
@@ -97,7 +100,7 @@ static int app_init_SDL()
         return 1;
 	}
 
-    isFullscreen = false;
+    isFullscreen = config.fullscreen == 1;
     // app_toggle_fullscreen();
 
     // Create renderer
@@ -166,6 +169,9 @@ int app_init(SCENE* arrScenes, int count, const char* assPath)
     // Make the first scene the current scene
     if(sceneCount > 0)
         currentScene = scenes[0];
+
+    // Calculate frame wait value
+    frame_wait = (int) floor (1000.0f / (float) config.fps);
 
     isRunning = true;
 
@@ -293,8 +299,10 @@ void app_destroy()
 
 /// Run application
 /// > An error code, 0 on success, 1 on error
-int app_run(SCENE* arrScenes, int count)
+int app_run(SCENE* arrScenes, int count, CONFIG c)
 {
+    config = c;
+
     if(app_init(arrScenes,count,NULL) != 0) return 1;
 
     while(isRunning)
@@ -307,7 +315,7 @@ int app_run(SCENE* arrScenes, int count)
 
         // Wait
         int deltaMilliseconds = (newTicks - oldTicks);
-        int restTime = (int) (FRAME_WAIT-1) - (int)deltaMilliseconds;
+        int restTime = (int) (frame_wait-1) - (int)deltaMilliseconds;
         if (restTime > 0) 
             SDL_Delay((unsigned int) restTime);
 
