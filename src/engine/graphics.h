@@ -104,7 +104,9 @@ void fill_rect(int x, int y, int w, int h, Uint8 index);
 /// < x2 Second X coordinate
 /// < y2 Second Y coordinate
 /// < index Color index
-void draw_line(int x1, int y1, int x2, int y2, Uint8 index);
+/// < depthStart Depth start
+/// < depthStep Depth step
+void draw_line(int x1, int y1, int x2, int y2, Uint8 index, float depthStart, float depthStep);
 
 /// Set floor level (0 by default)
 /// < level Floor level
@@ -117,11 +119,24 @@ void set_floor_level(int level);
 /// < far Far line
 void set_wall_lines(bool bottom, bool top, bool near, bool far);
 
+/// Set texture area
+/// < x X coordinate
+/// < y Y coordinate
+/// < w Width
+/// < h Height
+void set_tex_area(float x, float y, float w, float h);
+
 /// Bind texture
 /// < tex Texture to bind
 void bind_texture(BITMAP* tex);
 
 /// Clear depth buffer
 void clear_depth();
+
+/// Enabled darkness
+/// < use Use darkness
+/// < begin Depth where the darkness begins
+/// < end Darkness end
+void set_darkness(bool use, float begin, float end);
 
 #endif // __GRAPHICS__

@@ -42,6 +42,7 @@ void stage_draw()
     clear_depth();
 
     bind_texture(bmpWall);
+    set_tex_area(0.0f,0.0f,1.0f,1.0f);
 
     const float w = 1.0f;
     int i = 0;
@@ -53,11 +54,11 @@ void stage_draw()
         draw_wall(vec2(i*w,-4.0f),vec2( (i+1)*w,-4.0f),1.5f);
         draw_wall(vec2(-4.0f,i*w),vec2( -4.0f,(i+1)*w),1.5f);
 
-
         if(i >= -2)
         {
             set_wall_lines(true,true,i == -2,i == 3);
             draw_wall(vec2(4.0f,i*w),vec2( 4.0f,(i+1)*w),1.5f);
         }
     }
+
 }

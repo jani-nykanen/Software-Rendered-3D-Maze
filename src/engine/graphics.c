@@ -20,10 +20,25 @@ static SDL_Point windowDim;
 /// Floor level
 static int floorLevel;
 
+/// Darkness value
+static int darkness;
+/// Use darkness
+static bool useDarkness;
+/// Dark begin
+static float darkBegin;
+/// Dark end
+static float darkEnd;
+/// Darkness step
+static float darkStep;
+
 /// Texture used in wall rendering
 static BITMAP* texture;
 /// Wall lines
 static bool wallLines[4];
+/// Wall tex area pos
+static VEC2 texPos;
+/// Wall tex area dimensions
+static VEC2 texDim;
 
 /// Put pixel to the screen
 /// < x X coordinate
@@ -33,7 +48,7 @@ static void put_pixel(int x, int y, Uint8 index)
 {
     if(index == 255 || x < 0 || y < 0 || x >= gframe->w || y >= gframe->h) return;
 
-    gframe->colorData[y*gframe->w+x] = index;
+    gframe->colorData[y*gframe->w+x] = index  + darkness*64;
 }
 
 /// Set global renderer
@@ -73,6 +88,7 @@ void bind_frame(FRAME* fr)
 {
     gframe = fr; 
     floorLevel = 0;
+    darkness = 0;
 }
 
 /// Clear frame
@@ -254,11 +270,16 @@ void draw_wall(VEC2 a, VEC2 b, float height)
     float starty = miny;
     float endy = maxy;
 
-    float tstepx = (float)texture->w / (float)(maxx-minx);
-    float tstepy = (float)texture->h / (float)(maxy-miny);
+    int tpx = (int)( texPos.x * texture->w);
+    int tpy = (int)( texPos.y * texture->h);
+    int tpw = (int)( texDim.x * texture->w);
+    int tph = (int)( texDim.y * texture->h);
 
-    float tx = 0.0f;
-    float ty = 0.0f;
+    float tstepx = (float) (texDim.x * texture->w) / (float)(maxx-minx);
+    float tstepy = (float) (texDim.y * texture->h) / (float)(maxy-miny);
+
+    float tx = tpx;
+    float ty = tpy;
 
     float depthStart = minf(pa.z,pb.z);
     float depthEnd = maxf(pa.z,pb.z);
@@ -266,20 +287,55 @@ void draw_wall(VEC2 a, VEC2 b, float height)
 
     float depth = cond ? depthStart : depthEnd;
 
+    // TODO: Make sure this works!
+    if( (x1 > x2 ? depthStart : depthEnd) > gframe->depth[minx] 
+        && (x1 > x2 ? depthEnd : depthStart) > gframe->depth[maxx])
+    {
+        return;
+    }
+
+    // Color index
+    Uint8 cindex;
+
+    darkness = 0;
+
     int x;
     for(x=beginx; x != endx; x += stepx)
     {
         if(x >= 0 && x < gframe->w && depth <= gframe->depth[x] )
         {
+            if(useDarkness)
+            {
+                if(depth >= darkBegin)
+                {
+                    darkness = floor(4 * (depth - darkBegin) / (darkEnd-darkBegin) ) +1;
+                    if(darkness > 3) darkness = 3;
+                }
+                else
+                    darkness = 0;
+            }
+
             for(dy=starty; dy <= endy; dy += 1.0f)
             {
-                put_pixel((int)dx,(int)dy - floorLevel,
-                    cond ? texture->data[(int)ty * texture->w + (int)tx ]
-                    : texture->data[(int)ty * texture->w + (texture->w - (int)tx  -1)]);
+                if(cond)
+                    cindex = texture->data[(int)ty * texture->w + (int)tx ];
+                else
+                    cindex = texture->data[(int)ty * texture->w + (tpw - (int)tx  -1)];
+                    
+                put_pixel((int)dx,(int)dy - floorLevel,cindex);
                     
                 ty += tstepy;
                 if((int)ty >= texture->h)
                     ty = texture->h -1.0f;
+
+                if(wallLines[0] && dy + 1.0f >= endy)
+                {
+                    put_pixel((int)dx,(int)dy - floorLevel + (x == beginx || x == endx ? 0 : 1), 0);
+                }
+                else if(wallLines[1] && dy - 1.0f < starty)
+                {
+                    put_pixel((int)dx,(int)dy - floorLevel - (x == beginx || x == endx ? 0 : 1), 0);
+                }
             }
             gframe->depth[x] = depth;
         }
@@ -289,18 +345,25 @@ void draw_wall(VEC2 a, VEC2 b, float height)
 
         dx -= 1.0f * -stepx;
 
-        tstepy = (float)texture->h / fabs(starty-endy);
-        ty = 0.0f;
+        tstepy = (float)(tph) / fabs(starty-endy);
+        ty = tpy;
         tx += tstepx;
 
-        depth += depthStep * stepx;
+        depth += depthStep ;
     }
 
-    // Draw lines
-    if(wallLines[0]) draw_line(x1,y1 - floorLevel,x2,y2 - floorLevel,0);
-    if(wallLines[1]) draw_line(x1,y3-1 - floorLevel,x2,y4-1 - floorLevel,0);
-    if(wallLines[2]) fill_rect(x1,y3 -floorLevel,1,y1-y3+1,0);
-    if(wallLines[3]) fill_rect(x2,y4 -floorLevel,1,y2-y4+1,0);
+    if(wallLines[2])
+    {
+        if( x1 < x2 ? depthStart <= gframe->depth[(int)x1] 
+            : depthEnd <= gframe->depth[(int)x1])
+            fill_rect(x1,y3 -floorLevel,1,y1-y3+1,0);
+    }
+    if(wallLines[3])
+    {
+        if( x1 < x2 ? depthEnd <= gframe->depth[(int)x2] 
+            : depthStart <= gframe->depth[(int)x2])
+            fill_rect(x2,y4 -floorLevel,1,y2-y4+1,0);
+    }
 }
 
 /// Draw a 3D sprite to a position p
@@ -323,20 +386,37 @@ void draw_sprite_3D(BITMAP* b, VEC3 p, float w, float h)
     fx *= gframe->w / (xhop*2);
     fy *= gframe->h / (yhop*2);
 
-    float sx = 1.0f/pp.z * w;
-    float sy = 1.0f/pp.z * h;
+    float sx = 1.0f/pp.z * w * texDim.x;
+    float sy = 1.0f/pp.z * h * texDim.y;
+
+    int tpx = (int)( texPos.x * b->w);
+    int tpy = (int)( texPos.y * b->h);
+
+    float stepx = 1.0f/sx * texDim.x;
+    float stepy = 1.0f/sy * texDim.y;
 
     int dx = fx - sx * b->w/2;
     int dy = fy - sy * b->h;
 
     int x; // Screen X
     int y; // Screen Y
-    int px = 0; // Pixel X
-    int py = 0; // Pixel Y
-    float pxf = 0; // Pixel X (float)
-    float pyf = 0; // Pixel Y (float)
+    int px = tpx; // Pixel X
+    int py = tpy; // Pixel Y
+    float pxf = (float)tpx; // Pixel X (float)
+    float pyf = (float)tpy; // Pixel Y (float)
 
     float depth = pp.z;
+
+    if(useDarkness)
+    {
+        if(depth >= darkBegin)
+        {
+            darkness = floor(4 * (depth - darkBegin) / (darkEnd-darkBegin) ) +1;
+            if(darkness > 3) darkness = 3;
+        }
+        else
+            darkness = 0;
+    }
 
     for(x = dx; x < dx+ (int)floor(b->w * sx); x++)
     {
@@ -348,13 +428,13 @@ void draw_sprite_3D(BITMAP* b, VEC3 p, float w, float h)
                 py = (int)(pyf);
 
                 put_pixel(x,y -floorLevel, b->data[py*b->w +px]);
-                pyf += 1.0f/sy;
+                pyf += stepy;
             }
 
             gframe->depth[x] = depth;
         }
-        pyf = 0.0f;
-        pxf += 1.0f/sx;
+        pyf = (float)tpy;
+        pxf += stepx;
     } 
 }
 
@@ -374,22 +454,35 @@ void fill_rect(int x, int y, int w, int h, Uint8 index)
 }
 
 /// Draw line
-void draw_line(int x1, int y1, int x2, int y2, Uint8 index)
+void draw_line(int x1, int y1, int x2, int y2, Uint8 index, float depthStart, float depthStep)
 {
+    
     int x0 = x1;
     int y0 = y1;
         
     int dx = abs(x2-x0), sx = x0<x2 ? 1 : -1;
     int dy = abs(y2-y0), sy = y0<y2 ? 1 : -1; 
     int err = (dx>dy ? dx : -dy)/2, e2;
+
+    int oldX;
+    int stepx = x1 < x2 ? -1 : 1;
+
+    float depth = depthStart;
         
     for(;;)
     {
-        put_pixel(x0,y0,index);
+        oldX = dx;
+
+        if(depth <= gframe->depth[dx])
+            put_pixel(x0,y0,index);
+
         if (x0==x2 && y0==y2) break;
         e2 = err;
         if (e2 >-dx) { err -= dy; x0 += sx; }
         if (e2 < dy) { err += dx; y0 += sy; }
+
+        if(oldX != dx)
+            depth += depthStep * stepx;
     }
 }
 
@@ -409,10 +502,27 @@ void set_wall_lines(bool bottom, bool top, bool near, bool far)
     wallLines[3] = far;
 }
 
+/// Set wall texture area
+/// < x X coordinate
+/// < y Y coordinate
+/// < w Width
+/// < h Height
+void set_tex_area(float x, float y, float w, float h)
+{
+    texPos.x = x;
+    texPos.y = y;
+    texDim.x = w;
+    texDim.y = h;
+}
+
 /// Bind texture
 void bind_texture(BITMAP* tex)
 {
     texture = tex;
+    texPos.x = 0.0f;
+    texPos.y = 0.0f;
+    texDim.x = 1.0f;
+    texDim.y = 1.0f;
 }
 
 /// Clear depth buffer
@@ -423,4 +533,19 @@ void clear_depth()
     {
         gframe->depth[i] = 10000.0f;
     }
+}
+
+
+/// Enabled darkness
+void set_darkness(bool use, float begin, float end)
+{
+    useDarkness = use;
+    if(use)
+    {
+        darkBegin = begin;
+        darkEnd = end;
+        darkStep = (darkEnd-darkBegin) / 3.0f;
+    }
+    
+    darkness = 0;
 }

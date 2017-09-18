@@ -56,8 +56,10 @@ static void game_draw()
     tr_identity();
     use_camera(&cam);
 
+    set_darkness(true,7.5f,15.0f);
     stage_draw();
     draw_objects();
+    set_darkness(true,0.0f,0.0f);
 
     hud_draw();
 }

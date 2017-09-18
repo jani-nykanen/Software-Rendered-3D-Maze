@@ -82,7 +82,7 @@ static void sort_depth()
 }
 
 /// Add an object to the game object array
-void add_object(VEC3 pos, float w, float h, BITMAP* tex, SDL_Rect texArea)
+void add_object(VEC3 pos, float w, float h, BITMAP* tex)
 {
     int i = 0;
     for(; i < NUM_OBJ; i++)
@@ -90,7 +90,7 @@ void add_object(VEC3 pos, float w, float h, BITMAP* tex, SDL_Rect texArea)
         if(objs[i].exist == false)
         {
             objs[i] = create_object(pos,w,h);
-            obj_bind_texture(&objs[i],tex,texArea);
+            obj_bind_texture(&objs[i],tex,vec2(0.0f,0.0f),vec2(1.0f,1.0f));
             objs[i].exist = true;
 
             return;
@@ -114,9 +114,16 @@ void init_object_control()
     bmpFigure = get_bitmap("figure");
 
     // Add test objects
-    add_object(vec3(0.5f,1.0f,2.0f),1.0f,1.0f,bmpFigure,(SDL_Rect){0,0,0,0});
-    add_object(vec3(1.5f,1.0f,0.5f),1.0f,1.0f,bmpFigure,(SDL_Rect){0,0,0,0});
-    add_object(vec3(-1.25f,1.0f,-0.25f),1.0f,1.0f,bmpFigure,(SDL_Rect){0,0,0,0});
+    add_object(vec3(0.5f,1.0f,2.0f),1.0f,1.0f,bmpFigure);
+    add_object(vec3(1.5f,1.0f,0.5f),1.0f,1.0f,bmpFigure);
+    add_object(vec3(-1.25f,1.0f,-0.25f),1.0f,1.0f,bmpFigure);
+
+    for(i=0; i < 3; i++)
+    {
+        objs[i].texPos = vec2(0.0f,0.0f);
+        objs[i].texDim = vec2(1.0f,0.25f);
+        objs[i].angle = M_PI/2.0f * (float) (rand() % 4);
+    }
 
 }
 
@@ -134,6 +141,7 @@ void update_obj_control(CAMERA* cam, float tm)
         if(objs[i].exist)
         {
             obj_calculate_depth(&objs[i]);
+            obj_map_by_angle(&objs[i],cam);
         }
     }
 
@@ -153,6 +161,8 @@ void draw_objects()
         }
 
         if(objs[objDepth[i]].exist)
+        {
             obj_draw(&objs[objDepth[i]]);
+        }
     }
 }

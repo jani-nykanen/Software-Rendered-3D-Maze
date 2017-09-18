@@ -20,13 +20,25 @@ static void pl_control(PLAYER* pl, float tm)
 
     if(fabs(stick.y) > 0.1f)
     {
-        pl->target.y = stick.y * cos(pl->angle) * pl->maxSpeed * tm;
-        pl->target.x = stick.y * sin(pl->angle) * pl->maxSpeed * tm;
+        pl->target.y = stick.y * cos(pl->angle) * pl->maxSpeed ;
+        pl->target.x = stick.y * sin(pl->angle) * pl->maxSpeed ;
     }
     else
     {
         pl->target.x = 0.0f;
         pl->target.y = 0.0f;
+    }
+
+    // Temp
+    if(get_key_state((int)SDL_SCANCODE_Z) == DOWN)
+    {
+        pl->target.y = 1.0f * cos(pl->angle + M_PI/2.0f) * pl->maxSpeed ;
+        pl->target.x = 1.0f * sin(pl->angle + M_PI/2.0f) * pl->maxSpeed ;
+    }
+    else if(get_key_state((int)SDL_SCANCODE_X) == DOWN)
+    {
+        pl->target.y = -1.0f * cos(pl->angle + M_PI/2.0f) * pl->maxSpeed ;
+        pl->target.x = -1.0f * sin(pl->angle + M_PI/2.0f) * pl->maxSpeed ;
     }
 }
 

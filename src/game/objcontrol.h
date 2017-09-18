@@ -13,8 +13,7 @@
 /// < w Width
 /// < h Height
 /// < tex Texture
-/// < texArea Texture area
-void add_object(VEC3 pos, float w, float h, BITMAP* tex, SDL_Rect texArea);
+void add_object(VEC3 pos, float w, float h, BITMAP* tex);
 
 /// Init object controller
 void init_object_control();
