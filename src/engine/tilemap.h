@@ -11,7 +11,7 @@ typedef struct
 {
     int w; /// Width
     int h; /// Height
-    Uint8** layers; /// Layers
+    Uint8* layers[16]; /// Layers
 }
 TILEMAP;
 
