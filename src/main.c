@@ -11,8 +11,6 @@
 
 /// Configuration
 static CONFIG c;
-/// Asset path
-static char assPath[256];
 
 /// Read configuration file
 /// < path Path
@@ -58,7 +56,15 @@ static int read_config(const char* path)
             }
             else if(strcmp(param,"asset_path") == 0)
             {
-                strcpy(assPath,value);
+                strcpy(c.assPath,value);
+            }
+            else if(strcmp(param,"canvas_width") == 0)
+            {
+                c.canvasWidth = atoi(value);
+            }
+            else if(strcmp(param,"canvas_height") == 0)
+            {
+                c.canvasHeight = atoi(value);
             }
 
             count = 0;
@@ -83,12 +89,6 @@ int main(int argc, char** argv)
     // Load config
     
     if(read_config("config.list") != 0)
-    {
-        return 1;
-    }
-
-    // Load assets
-    if(load_assets(assPath) != 0)
     {
         return 1;
     }

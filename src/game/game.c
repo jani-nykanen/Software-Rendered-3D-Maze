@@ -8,6 +8,7 @@
 #include "../engine/transform.h"
 #include "../engine/controls.h"
 #include "../engine/assets.h"
+#include "../engine/tilemap.h"
 
 #include "camera.h"
 #include "objcontrol.h"
@@ -18,6 +19,9 @@
 
 /// Game camera
 static CAMERA cam;
+
+/// Test map
+static TILEMAP* testMap;
 
 /// Init game
 static int game_init()
@@ -35,6 +39,13 @@ static int game_init()
 
     // Init vpad
     vpad_init();
+
+    // Load test map
+    testMap = load_tilemap("assets/maps/test_room.tmx");
+    if(testMap == NULL)
+    {
+        return 1;
+    }
     
     return 0;
 }
@@ -56,10 +67,10 @@ static void game_draw()
     tr_identity();
     use_camera(&cam);
 
-    set_darkness(true,7.5f,15.0f);
+    set_darkness(true,5.0f,10.0f);
     stage_draw();
     draw_objects();
-    set_darkness(true,0.0f,0.0f);
+    set_darkness(false,0.0f,0.0f);
 
     hud_draw();
 }

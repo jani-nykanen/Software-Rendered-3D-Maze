@@ -2,6 +2,8 @@
 # NOTE: Empty lines not yet supported for whatever reason
 win_width 512
 win_height 448
+canvas_width 256
+canvas_height 224
 fullscreen 0
 fps 30
 asset_path assets/assets.list

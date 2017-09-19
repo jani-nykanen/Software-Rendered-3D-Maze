@@ -8,6 +8,7 @@
 
 #include "controls.h"
 #include "graphics.h"
+#include "assets.h"
 
 /// Is application app_running
 static bool isRunning;
@@ -42,10 +43,6 @@ static Uint8 sceneCount;
 
 /// Wait time
 static int frame_wait;
-/// Canvas width (@todo Read from an external file)
-static const int CANVAS_WIDTH = 256;
-/// Canvas height
-static const int CANVAS_HEIGHT = 224;
 
 /// Configuration
 static CONFIG config;
@@ -56,10 +53,10 @@ static CONFIG config;
 static void app_calc_canvas_prop(int winWidth, int winHeight)
 {
     // If aspect ratio is bigger or equal to the ratio of the canvas
-    if((float)winWidth/(float)winHeight >= (float)CANVAS_WIDTH/ (float)CANVAS_HEIGHT )
+    if((float)winWidth/(float)winHeight >= (float)config.canvasWidth/ (float)config.canvasHeight )
     {
         canvasSize.y = winHeight;
-        canvasSize.x = (int) ( (float)winHeight / (float) CANVAS_HEIGHT  * CANVAS_WIDTH);
+        canvasSize.x = (int) ( (float)winHeight / (float) config.canvasHeight  * config.canvasWidth);
 
         canvasPos.x = winWidth/2 - canvasSize.x/2;
         canvasPos.y = 0;
@@ -67,7 +64,7 @@ static void app_calc_canvas_prop(int winWidth, int winHeight)
     else
     {
         canvasSize.x = winWidth;
-        canvasSize.y =  (int) ( (float)canvasSize.x / (float) CANVAS_WIDTH  * CANVAS_HEIGHT );
+        canvasSize.y =  (int) ( (float)canvasSize.x / (float) config.canvasWidth  * config.canvasHeight );
 
         canvasPos.y = winHeight/2 - canvasSize.y/2;
         canvasPos.x = 0;
@@ -138,7 +135,7 @@ int app_init(SCENE* arrScenes, int count, const char* assPath)
     set_global_renderer(rend);
 
     // Create frame
-    canvas = frame_create(CANVAS_WIDTH,CANVAS_HEIGHT);
+    canvas = frame_create(config.canvasWidth,config.canvasHeight);
     if(canvas == NULL)
     {
         return 1;
@@ -302,6 +299,12 @@ void app_destroy()
 int app_run(SCENE* arrScenes, int count, CONFIG c)
 {
     config = c;
+
+    // Load assets
+    if(load_assets(c.assPath) != 0)
+    {
+        return 1;
+    }
 
     if(app_init(arrScenes,count,NULL) != 0) return 1;
 

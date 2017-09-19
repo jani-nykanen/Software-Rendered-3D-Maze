@@ -48,7 +48,24 @@ static void put_pixel(int x, int y, Uint8 index)
 {
     if(index == 255 || x < 0 || y < 0 || x >= gframe->w || y >= gframe->h) return;
 
-    gframe->colorData[y*gframe->w+x] = index  + darkness*64;
+    if(useDarkness)
+    {
+        Uint8 col;
+        if(darkness % 2 == 0)
+        {
+            col = index  + (darkness+1)/2 *64;
+        }
+        else
+        {
+            if( (x % 2 == 0 && y % 2 == 0) || (x % 2 == 1 && y % 2 == 1) )
+                col = index  + (darkness)/2 *64;
+            else
+                col = index  + (darkness+2) / 2 *64;
+        }
+        gframe->colorData[y*gframe->w+x] = col;
+        return;
+    }
+    gframe->colorData[y*gframe->w+x] = index;
 }
 
 /// Set global renderer
@@ -100,6 +117,9 @@ void clear_frame(Uint8 index)
 /// Draw a non-scaled bitmap
 void draw_bitmap(BITMAP* b, int dx, int dy)
 {
+    bool d = useDarkness;
+    useDarkness = false;
+
     int x; // Screen X
     int y = dy; // Screen Y
     int px = 0; // Pixel X
@@ -116,7 +136,8 @@ void draw_bitmap(BITMAP* b, int dx, int dy)
         py ++;
         px = 0;
     } 
-    
+ 
+    useDarkness = d;
 }
 
 /// Draw a scaled bitmap
@@ -308,8 +329,8 @@ void draw_wall(VEC2 a, VEC2 b, float height)
             {
                 if(depth >= darkBegin)
                 {
-                    darkness = floor(4 * (depth - darkBegin) / (darkEnd-darkBegin) ) +1;
-                    if(darkness > 3) darkness = 3;
+                    darkness = floor(6 * (depth - darkBegin) / (darkEnd-darkBegin) ) +1;
+                    if(darkness > 6) darkness = 6;
                 }
                 else
                     darkness = 0;
@@ -411,8 +432,8 @@ void draw_sprite_3D(BITMAP* b, VEC3 p, float w, float h)
     {
         if(depth >= darkBegin)
         {
-            darkness = floor(4 * (depth - darkBegin) / (darkEnd-darkBegin) ) +1;
-            if(darkness > 3) darkness = 3;
+            darkness = floor(6 * (depth - darkBegin) / (darkEnd-darkBegin) ) +1;
+            if(darkness > 6) darkness = 6;
         }
         else
             darkness = 0;
