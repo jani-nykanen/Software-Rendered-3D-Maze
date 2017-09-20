@@ -102,7 +102,7 @@ void add_object(VEC3 pos, float w, float h, BITMAP* tex)
 /// Init object controller
 void init_object_control()
 {
-    pl = create_player(vec2(0.0f,2.0f));
+    pl = create_player(vec2(-2.0f,-2.0f));
 
     int i = 0;
     for(; i < 32; i++)
@@ -114,9 +114,9 @@ void init_object_control()
     bmpFigure = get_bitmap("figure");
 
     // Add test objects
-    add_object(vec3(0.5f,1.0f,2.0f),1.0f,1.0f,bmpFigure);
-    add_object(vec3(1.5f,1.0f,0.5f),1.0f,1.0f,bmpFigure);
-    add_object(vec3(-1.25f,1.0f,-0.25f),1.0f,1.0f,bmpFigure);
+    add_object(vec3(0.5f,1.0f,2.0f),2.0f,2.0f,bmpFigure);
+    add_object(vec3(1.5f,1.0f,0.5f),2.0f,2.0f,bmpFigure);
+    add_object(vec3(2.25f,1.0f,1.25f),2.0f,2.0f,bmpFigure);
 
     for(i=0; i < 3; i++)
     {

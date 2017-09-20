@@ -20,4 +20,8 @@ TILEMAP;
 /// > A new tilemap
 TILEMAP* load_tilemap(const char* path);
 
+/// Remove tilemap from the memory
+/// < t Tilemap to destroy
+void destroy_tilemap(TILEMAP* t);
+
 #endif // __TILEMAP__

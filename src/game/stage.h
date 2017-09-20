@@ -18,6 +18,6 @@ void stage_update(float tm);
 void stage_get_player_collision(PLAYER* pl);
 
 /// Draw stage
-void stage_draw();
+void stage_draw(CAMERA* cam);
 
 #endif // __STAGE__

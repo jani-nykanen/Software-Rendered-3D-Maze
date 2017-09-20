@@ -67,3 +67,17 @@ TILEMAP* load_tilemap(const char* path)
 
     return t;
 }
+
+/// Remove tilemap from the memory
+void destroy_tilemap(TILEMAP* t)
+{
+    if(t == NULL) return;
+
+    int i = 0;
+    for(; t->layers[i] != NULL; i++)
+    {
+        free(t->layers[i]);
+    }
+
+    free(t);
+}

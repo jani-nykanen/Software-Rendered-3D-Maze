@@ -1,5 +1,8 @@
 # A list of assets
+# Bitmaps
 bitmap figure assets/bitmaps/figure.png
 bitmap wall assets/bitmaps/wall.png
 bitmap hud assets/bitmaps/hud.png
 bitmap bg assets/bitmaps/bg.png
+# Tilemaps
+tilemap test assets/maps/test_room.tmx

@@ -407,17 +407,17 @@ void draw_sprite_3D(BITMAP* b, VEC3 p, float w, float h)
     fx *= gframe->w / (xhop*2);
     fy *= gframe->h / (yhop*2);
 
-    float sx = 1.0f/pp.z * w * texDim.x;
-    float sy = 1.0f/pp.z * h * texDim.y;
+    float sx = 1.0f/pp.z * w;
+    float sy = 1.0f/pp.z * h;
 
     int tpx = (int)( texPos.x * b->w);
     int tpy = (int)( texPos.y * b->h);
 
-    float stepx = 1.0f/sx * texDim.x;
-    float stepy = 1.0f/sy * texDim.y;
+    float stepx = 1.0f/sx * ((b->w*texDim.x)/64.0f);
+    float stepy = 1.0f/sy * ((b->h*texDim.y)/64.0f);
 
-    int dx = fx - sx * b->w/2;
-    int dy = fy - sy * b->h;
+    int dx = fx - sx * 32;
+    int dy = fy - sy * 64;
 
     int x; // Screen X
     int y; // Screen Y
@@ -439,11 +439,11 @@ void draw_sprite_3D(BITMAP* b, VEC3 p, float w, float h)
             darkness = 0;
     }
 
-    for(x = dx; x < dx+ (int)floor(b->w * sx); x++)
+    for(x = dx; x < dx+ 64*sx; x++)
     {
         if(x >= 0 && x < gframe->w && depth <= gframe->depth[x] )
         {
-            for(y = dy; y < dy+ (int)floor(b->h * sy); y++)
+            for(y = dy; y < dy+ 64*sy; y++)
             {
                 px = (int)(pxf);
                 py = (int)(pyf);

@@ -15,6 +15,7 @@
 enum
 {
     T_BITMAP = 0,
+    T_TILEMAP = 1,
 };
 
 /// Asset type
@@ -57,6 +58,11 @@ static int load_from_list()
                 assType = T_BITMAP;
                 wordIndex = 2;
             }
+            else if(strcmp(get_list_word(i).data,"tilemap") == 0)
+            {
+                assType = T_TILEMAP;
+                wordIndex = 2;
+            }
             
         }
         else
@@ -69,17 +75,42 @@ static int load_from_list()
             {
                 path = get_list_word(i).data;
                 
-                // Load f ile
-                if(assType == T_BITMAP)
-                {
+                bool success = false;
 
-                    BITMAP* b = load_bitmap(path);
-                    if(b == NULL)
+                void* p = NULL;
+
+                // Load file
+                switch(assType)
+                {
+                    case T_BITMAP:
                     {
-                        return 1;
+                        p = (void*)load_bitmap(path);
+                        if(p == NULL)
+                        {
+                            return 1;
+                        }
+                        success = true;
+                        break;
                     }
-                    assets[assCount].data = (void*)b;
-                    assets[assCount].type = T_BITMAP;
+
+                    case T_TILEMAP:
+                    {
+                        p = (void*)load_tilemap(path);
+                        if(p == NULL)
+                        {
+                            return 1;
+                        }
+                        success = true;
+                        break;
+                    }
+
+                    default:
+                        break;
+                }
+                if(success)
+                {
+                    assets[assCount].data = p;
+                    assets[assCount].type = assType;
                     strcpy(assets[assCount].name,name);
                 }
 
@@ -121,6 +152,22 @@ BITMAP* get_bitmap(const char* name)
     return NULL;
 }
 
+
+/// Get tilemap by name
+TILEMAP* get_tilemap(const char* name)
+{
+    int i = 0;
+    for(; i < assCount; i++)
+    {
+        if(assets[i].type == T_TILEMAP && strcmp(assets[i].name,name) == 0)
+        {
+            return (TILEMAP*)assets[i].data;
+        }
+    }
+
+    return NULL;
+}
+
 /// Destroy loaded asset files
 void destroy_assets()
 {
@@ -132,6 +179,11 @@ void destroy_assets()
         {
             BITMAP* b = (BITMAP*)assets[i].data;
             destroy_bitmap(b);
+        }
+        else if(t == T_TILEMAP)
+        {
+            TILEMAP* t = (TILEMAP*)assets[i].data;
+            destroy_tilemap(t);
         }
     }
 }
