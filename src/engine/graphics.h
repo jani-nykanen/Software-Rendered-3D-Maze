@@ -54,6 +54,30 @@ void clear_frame(Uint8 index);
 /// < dy Y coordinate
 void draw_bitmap(BITMAP* b, int dx, int dy);
 
+/// Draw a bitmap region
+/// < b Bitmap to be drawn
+/// < sx Source X
+/// < sy Source Y
+/// < sw Source W
+/// < sh Source H
+/// < dx X coordinate
+/// < dy Y coordinate
+void draw_bitmap_region(BITMAP* b, int sx, int sy, int sw, int sh, int dx, int dy);
+
+
+/// Draw a bitmap region
+/// < b Bitmap to be drawn
+/// < sx Source X
+/// < sy Source Y
+/// < sw Source W
+/// < sh Source H
+/// < dx X coordinate
+/// < dy Y coordinate
+/// < dw Destination w
+/// < dh Destination h
+void draw_scaled_bitmap_region(BITMAP* b, int sx, int sy, int sw, int sh, int dx, int dy, int dw, int dh);
+
+
 /// Draw a scaled bitmap
 /// < b Bitmap to be drawn
 /// < dx X coordinate

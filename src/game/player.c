@@ -17,6 +17,8 @@ static void pl_control(PLAYER* pl, float tm)
     {
         pl->angle += stick.x * pl->maxSpeed * tm;
     }
+    if(pl->angle < 0.0f) pl->angle += M_PI*2;
+    else if(pl->angle >= M_PI*2) pl->angle -= M_PI*2;
 
     if(fabs(stick.y) > 0.1f)
     {

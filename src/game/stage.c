@@ -48,9 +48,11 @@ static void draw_tilemap_wall(int x, int y, Uint8 tid)
 }
 
 /// Draw tilemap to "3D" space
-/// < cpos Camera position
-static void draw_tilemap(VEC3 cpos)
+/// < cam Camera
+static void draw_tilemap(CAMERA* cam)
 {
+    VEC3 cpos = cam->pos;
+
     int cx = (int)floor(-cpos.x / 2.0f);
     int cy = (int)floor(-cpos.z / 2.0f);
 
@@ -154,23 +156,6 @@ void stage_draw(CAMERA* cam)
     set_tex_area(0.0f,0.0f,1.0f,1.0f);
 
     set_wall_lines(true,true,false,false);
-/*
-    const float w = 1.0f;
-    int i = 0;
-    for(i=-4; i <= 3; i++)
-    {
-        
 
-        draw_wall(vec2(i*w,4.0f),vec2( (i+1)*w,4.0f),1.5f);
-        draw_wall(vec2(i*w,-4.0f),vec2( (i+1)*w,-4.0f),1.5f);
-        draw_wall(vec2(-4.0f,i*w),vec2( -4.0f,(i+1)*w),1.5f);
-
-        if(i >= -2)
-        {
-            set_wall_lines(true,true,i == -2,i == 3);
-            draw_wall(vec2(4.0f,i*w),vec2( 4.0f,(i+1)*w),1.5f);
-        }
-    }
-*/
-    draw_tilemap(cam->pos);    
+    draw_tilemap(cam);    
 }

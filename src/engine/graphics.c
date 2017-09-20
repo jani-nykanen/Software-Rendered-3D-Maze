@@ -140,6 +140,71 @@ void draw_bitmap(BITMAP* b, int dx, int dy)
     useDarkness = d;
 }
 
+/// Draw a bitmap region
+void draw_bitmap_region(BITMAP* b, int sx, int sy, int sw, int sh, int dx, int dy)
+{
+    bool d = useDarkness;
+    useDarkness = false;
+
+    int x; // Screen X
+    int y = dy; // Screen Y
+    int px = sx; // Pixel X
+    int py = sy; // Pixel Y
+
+    // Go though every pixel and put them to a frame
+    for(; y < dy+sh; y++)
+    {
+        for(x = dx; x < dx+sw; x++)
+        {
+            put_pixel(x,y, b->data[py*b->w +px]);
+            px ++;
+        }
+        py ++;
+        px = sx;
+    } 
+ 
+    useDarkness = d;
+}
+
+/// Draw a bitmap region
+/// < b Bitmap to be drawn
+/// < sx Source X
+/// < sy Source Y
+/// < sw Source W
+/// < sh Source H
+/// < dx X coordinate
+/// < dy Y coordinate
+/// < dw Destination w
+/// < dh Destination h
+void draw_scaled_bitmap_region(BITMAP* b, int sx, int sy, int sw, int sh, int dx, int dy, int dw, int dh)
+{
+    int x; // Screen X
+    int y = dy; // Screen Y
+    int px = sx; // Pixel X
+    int py = sy; // Pixel Y
+    float pxf = (float)sx; // Pixel X (float)
+    float pyf = (float)sy; // Pixel Y (float)
+
+    float ssx = (float)dw/(float)sw;
+    float ssy = (float)dh/(float)sh;
+
+    // Go though every pixel and put them to a frame
+    // if pixel is not out of frame range
+    for(; y < dy+ (int)floor(dh ); y++)
+    {
+        for(x = dx; x < dx+ (int)floor(dw ); x++)
+        {
+            px = (int)(pxf);
+            py = (int)(pyf);
+
+            put_pixel(x,y, b->data[py*b->w +px]);
+            pxf += 1.0f/ssx;
+        }
+        pyf += 1.0f/ssy;
+        pxf = (float)sx;
+    } 
+}
+
 /// Draw a scaled bitmap
 void draw_scaled_bitmap(BITMAP* b, int dx, int dy, float sx, float sy)
 {
