@@ -323,7 +323,7 @@ void draw_wall(VEC2 a, VEC2 b, float height)
     int x;
     for(x=beginx; x != endx; x += stepx)
     {
-        if(x >= 0 && x < gframe->w && depth <= gframe->depth[x] )
+        if(x >= 0 && x < gframe->w && (depthStart + depthEnd)/2.0f <= gframe->depth[x] )
         {
             if(useDarkness)
             {
@@ -358,7 +358,7 @@ void draw_wall(VEC2 a, VEC2 b, float height)
                     put_pixel((int)dx,(int)dy - floorLevel - (x == beginx || x == endx ? 0 : 1), 0);
                 }
             }
-            gframe->depth[x] = depth;
+            gframe->depth[x] = (depthStart + depthEnd)/2.0f ;
         }
 
         starty += stepy  ;
