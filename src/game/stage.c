@@ -20,6 +20,8 @@ static TILEMAP* map;
 /// < tid Tileid
 static void draw_tilemap_wall(int x, int y, Uint8 tid)
 {
+    set_wall_lines(true,true,false,false);
+
     if(tid == 1 || tid == 5 || tid == 7 || tid == 10 || tid == 11 || tid == 12 || tid == 14 || tid == 15)
     {
         draw_wall(vec2(x*2.0f,y*2.0f),vec2( x*2.0f + 1.0f,y*2.0f),1.5f);

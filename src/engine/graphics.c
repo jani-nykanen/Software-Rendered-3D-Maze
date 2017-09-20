@@ -309,19 +309,21 @@ void draw_wall(VEC2 a, VEC2 b, float height)
     float depth = cond ? depthStart : depthEnd;
 
     // TODO: Make sure this works!
-    if( (x1 > x2 ? depthStart : depthEnd) > gframe->depth[minx] 
-        && (x1 > x2 ? depthEnd : depthStart) > gframe->depth[maxx])
+    /*
+    if( (!cond ? depthStart : depthEnd) > gframe->depth[minx] 
+        && (!cond ? depthEnd : depthStart) > gframe->depth[maxx])
     {
         return;
     }
-
+    */
+    
     // Color index
     Uint8 cindex;
 
     darkness = 0;
 
     int x;
-    for(x=beginx; x != endx; x += stepx)
+    for(x=beginx; x - stepx != endx; x += stepx)
     {
         if(x >= 0 && x < gframe->w && (depthStart + depthEnd)/2.0f <= gframe->depth[x] )
         {
@@ -369,6 +371,8 @@ void draw_wall(VEC2 a, VEC2 b, float height)
         tstepy = (float)(tph) / fabs(starty-endy);
         ty = tpy;
         tx += tstepx;
+        if((int)tx >= texture->w)
+            tx = texture->w-1;
 
         depth += depthStep ;
     }
