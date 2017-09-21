@@ -21,6 +21,8 @@ static Uint8 timeString [16];
 
 /// Heart beat
 static float hbeat;
+/// Beating speed
+static float beatSpeed;
 
 /// Set time string
 static void set_time_string()
@@ -92,6 +94,7 @@ void init_hud()
     bmpFont16 = get_bitmap("font16");
 
     hbeat = 0.0f;
+    beatSpeed = 1.0f;
 
     gameTime = 60*60*2;
 }
@@ -99,7 +102,7 @@ void init_hud()
 /// Update HUD
 void hud_update(float tm)
 {
-    hbeat += 0.1f * tm;
+    hbeat += 0.1f * beatSpeed * tm;
     gameTime -= 1.0f * tm;
 }
 
@@ -111,4 +114,10 @@ void hud_draw()
     draw_bitmap(bmpHudBox,0,192);
     draw_hud_elem();
     draw_hud_text();
+}
+
+/// Set heart speed
+void hud_set_heart_speed(float s)
+{
+    beatSpeed = s;
 }

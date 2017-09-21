@@ -14,4 +14,8 @@ void hud_update(float tm);
 /// Draw HUD
 void hud_draw();
 
+/// Set heart speed
+/// < Speed
+void hud_set_heart_speed(float s);
+
 #endif // __HUD__

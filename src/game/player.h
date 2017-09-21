@@ -24,6 +24,7 @@ typedef struct
     bool crouch; /// Is crouching
     bool running; /// Is running
     float bumpTimer; /// Bump is a good term for those running ups and downs
+    float heartSpeed; /// Bumping speed
 }
 PLAYER;
 

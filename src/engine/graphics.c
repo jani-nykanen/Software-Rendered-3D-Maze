@@ -392,10 +392,10 @@ void draw_wall(VEC2 a, VEC2 b, float height)
     int tpw = (int)( texDim.x * texture->w);
     int tph = (int)( texDim.y * texture->h);
 
-    float tstepx = (float) (texDim.x * texture->w) / (float)(maxx-minx);
+    float tstepx = (float) (texDim.x * texture->w) / (float)(maxx-minx)* ((x1 < x2) ? 1 : -1);
     float tstepy = (float) (texDim.y * texture->h) / (float)(maxy-miny);
 
-    float tx = tpx;
+    float tx = (x1 < x2) ? tpx : (tpx+tpw);
     float ty = tpy;
 
     float depthStart = minf(pa.z,pb.z);
@@ -404,7 +404,7 @@ void draw_wall(VEC2 a, VEC2 b, float height)
 
     float depth = cond ? depthStart : depthEnd;
 
-    // TODO: Make sure this works!
+    // TODO: Make this work, maybe?
     /*
     if( (!cond ? depthStart : depthEnd) > gframe->depth[minx] 
         && (!cond ? depthEnd : depthStart) > gframe->depth[maxx])
@@ -469,6 +469,8 @@ void draw_wall(VEC2 a, VEC2 b, float height)
         tx += tstepx;
         if((int)tx >= texture->w)
             tx = texture->w-1;
+        else if(tx < 0.0f)
+            tx = 0.0f;
 
         depth += depthStep ;
     }

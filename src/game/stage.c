@@ -8,6 +8,8 @@
 
 /// Wall bitmap
 static BITMAP* bmpWall;
+/// Door bitmap
+static BITMAP* bmpDoor;
 /// Background bitmap
 static BITMAP* bmpBg;
 
@@ -75,6 +77,20 @@ static void draw_tilemap(CAMERA* cam)
         for(x = sx; x <= ex; x++)
         {
             draw_tilemap_wall(x,y, map->layers[0] [y*map->w + x] );
+
+            // TEMP
+            if(map->layers[1] [y*map->w + x] == 17)
+            {
+                bind_texture(bmpDoor);
+                set_tex_area(0.0f,0.0f,0.5f,1.0f);
+                draw_wall(vec2(x*2.0f,y*2.0f+1.0f),vec2( x*2.0f + 1.0f,y*2.0f +1.0f),1.5f);
+
+                set_tex_area(0.5f,0.0f,0.5f,1.0f);
+                draw_wall(vec2(x*2.0f +1.0f,y*2.0f+1.0f),vec2( x*2.0f + 2.0f,y*2.0f +1.0f),1.5f);
+
+                bind_texture(bmpWall);
+                set_tex_area(0.0f,0.0f,1.0f,1.0f);
+            }
         }
     }
 }
@@ -83,6 +99,7 @@ static void draw_tilemap(CAMERA* cam)
 void init_stage()
 {
     bmpWall = get_bitmap("wall");
+    bmpDoor = get_bitmap("door");
     bmpBg = get_bitmap("bg");
 
     map = get_tilemap("test");

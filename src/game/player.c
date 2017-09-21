@@ -4,6 +4,7 @@
 #include "player.h"
 
 #include "../vpad.h"
+#include "hud.h"
 
 /// Control player
 /// < pl Player to control
@@ -82,7 +83,21 @@ static void pl_move(PLAYER* pl, float tm)
     if(pl->running)
     {
         pl->bumpTimer += 0.125f *tm;
+
+        pl->heartSpeed += 0.0125f * tm;
     }
+    else
+    {
+        if(pl->heartSpeed > 1.0f)
+        {
+            pl->heartSpeed -= (0.05f * (1.0f- (pl->totalSpeed)/0.05f)) * (pl->crouch ? 1.25f : 1);
+            if(pl->heartSpeed < 1.0f)
+            {
+                pl->heartSpeed = 1.0f;
+            }
+        }
+    }
+    hud_set_heart_speed(pl->heartSpeed);
 }
 
 /// Create a player object (mostly set default values)
@@ -99,6 +114,7 @@ PLAYER create_player(VEC2 pos)
     pl.radius = 0.95f;
     pl.crouch = false;
     pl.bumpTimer = 0.0f;
+    pl.heartSpeed = 1.0f;
     pl.running = false;
     pl.totalSpeed = 0.0f;
 

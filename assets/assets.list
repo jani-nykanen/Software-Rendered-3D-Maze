@@ -2,6 +2,7 @@
 # Bitmaps
 bitmap figure assets/bitmaps/figure.png
 bitmap wall assets/bitmaps/wall.png
+bitmap door assets/bitmaps/door.png
 bitmap hud assets/bitmaps/hud.png
 bitmap bg assets/bitmaps/bg.png
 bitmap hudText assets/bitmaps/hud_text.png
