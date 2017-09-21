@@ -17,4 +17,14 @@ VEC2 vpad_get_stick();
 /// Update vpad
 void vpad_update();
 
+/// Add a new button
+/// < index Button index
+/// < scancode Button scancode
+/// < joybutton Joystick button index
+void vpad_add_button(Uint8 index, int scancode, int joybutton);
+
+/// Get virtual pad button state
+/// < index Button index
+int vpad_get_button(Uint8 index);
+
 #endif // __VPAD__

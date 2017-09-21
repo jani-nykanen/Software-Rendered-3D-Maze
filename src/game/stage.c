@@ -147,10 +147,21 @@ void stage_get_player_collision(PLAYER* pl)
 /// Draw stage
 void stage_draw(CAMERA* cam)
 {
-    set_floor_level(16);
+    set_floor_level(- (int)cam->pos.y);
     
+    if((int)cam->pos.y > 0)
+    {
+        fill_rect(0,0,256,32,0b00101010);
+    }
+    else if((int)cam->pos.y < 0)
+    {
+        fill_rect(0,160,256,32,0b00101000);
+    }
+
     draw_bitmap(bmpBg,0,0);
     clear_depth();
+
+    set_floor_level(16 - (int)cam->pos.y);
 
     bind_texture(bmpWall);
     set_tex_area(0.0f,0.0f,1.0f,1.0f);

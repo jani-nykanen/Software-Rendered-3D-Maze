@@ -14,5 +14,5 @@ void use_camera(CAMERA* cam)
         cam->angle += M_PI*2;
 
     tr_rotate(cam->angle);
-    tr_translate(cam->pos.x,cam->pos.y,cam->pos.z);
+    tr_translate(cam->pos.x,0.0f,cam->pos.z);
 }

@@ -12,10 +12,12 @@ static void pl_control(PLAYER* pl, float tm)
 {
     VEC2 stick = vpad_get_stick();
     
+    pl->turnSpeed = (pl->running ? 0.05f : (pl->crouch ? 0.02f : 0.04f));
+
     // Rotate
     if(fabs(stick.x) > 0.1f)
     {
-        pl->angle += stick.x * pl->maxSpeed * tm;
+        pl->angle += stick.x * pl->turnSpeed * tm;
     }
     if(pl->angle < 0.0f) pl->angle += M_PI*2;
     else if(pl->angle >= M_PI*2) pl->angle -= M_PI*2;
@@ -31,17 +33,18 @@ static void pl_control(PLAYER* pl, float tm)
         pl->target.y = 0.0f;
     }
 
-    // Temp
-    if(get_key_state((int)SDL_SCANCODE_Z) == DOWN)
+    pl->crouch = vpad_get_button(0);
+    pl->running = vpad_get_button(1);
+
+    if(pl->crouch)
     {
-        pl->target.y = 1.0f * cos(pl->angle + M_PI/2.0f) * pl->maxSpeed ;
-        pl->target.x = 1.0f * sin(pl->angle + M_PI/2.0f) * pl->maxSpeed ;
+        pl->maxSpeed = 0.02f;
     }
-    else if(get_key_state((int)SDL_SCANCODE_X) == DOWN)
+    else
     {
-        pl->target.y = -1.0f * cos(pl->angle + M_PI/2.0f) * pl->maxSpeed ;
-        pl->target.x = -1.0f * sin(pl->angle + M_PI/2.0f) * pl->maxSpeed ;
+        pl->maxSpeed = pl->running ? 0.1f : 0.04f;
     }
+
 }
 
 /// Move player
@@ -73,6 +76,13 @@ static void pl_move(PLAYER* pl, float tm)
 
     pl->pos.x += pl->speed.x * tm;
     pl->pos.y += pl->speed.y * tm;
+
+    pl->totalSpeed = hypot(pl->speed.x,pl->speed.y);
+
+    if(pl->running)
+    {
+        pl->bumpTimer += 0.125f *tm;
+    }
 }
 
 /// Create a player object (mostly set default values)
@@ -85,7 +95,12 @@ PLAYER create_player(VEC2 pos)
     pl.angle = 0.0f;
     pl.speedMul = 0.01f;
     pl.maxSpeed = 0.05f;
+    pl.turnSpeed = 0.05f;
     pl.radius = 0.95f;
+    pl.crouch = false;
+    pl.bumpTimer = 0.0f;
+    pl.running = false;
+    pl.totalSpeed = 0.0f;
 
     return pl;
 }
@@ -98,9 +113,36 @@ void player_update(PLAYER* pl, float tm)
 }
 
 /// Set camera to follow player
-void player_set_camera(PLAYER* pl, CAMERA* cam)
+void player_set_camera(PLAYER* pl, CAMERA* cam, float tm)
 {
-    cam->pos = vec3(pl->pos.x,0.0f,pl->pos.y);
+    if(pl->crouch)
+    {
+        if(cam->pos.y > -32.0f)
+        {
+            cam->pos.y -= 2.0f * tm;
+            if(cam->pos.y < -32.0f)
+            {
+                cam->pos.y = -32.0f;
+            }
+        }
+    }
+    else if(cam->pos.y < 0.0f)
+    {
+        cam->pos.y += 2.0f * tm;
+        if(cam->pos.y > 0)
+        {
+            cam->pos.y = 0;
+        }
+    }
+    else
+    {
+        if(pl->running && pl->totalSpeed > 0.01f)
+        {
+            cam->pos.y = 0.0f + fabs(sin(pl->bumpTimer)) * 8.0f;
+        }
+    }
+
+    cam->pos = vec3(pl->pos.x,cam->pos.y,pl->pos.y);
     cam->angle = pl->angle;
 }
 

@@ -117,6 +117,8 @@ void clear_frame(Uint8 index)
 /// Draw a non-scaled bitmap
 void draw_bitmap(BITMAP* b, int dx, int dy)
 {
+    dy -= floorLevel;
+
     bool d = useDarkness;
     useDarkness = false;
 
@@ -143,6 +145,8 @@ void draw_bitmap(BITMAP* b, int dx, int dy)
 /// Draw a bitmap region
 void draw_bitmap_region(BITMAP* b, int sx, int sy, int sw, int sh, int dx, int dy)
 {
+    dy -= floorLevel;
+
     bool d = useDarkness;
     useDarkness = false;
 
@@ -178,6 +182,8 @@ void draw_bitmap_region(BITMAP* b, int sx, int sy, int sw, int sh, int dx, int d
 /// < dh Destination h
 void draw_scaled_bitmap_region(BITMAP* b, int sx, int sy, int sw, int sh, int dx, int dy, int dw, int dh)
 {
+    dy -= floorLevel;
+
     int x; // Screen X
     int y = dy; // Screen Y
     int px = sx; // Pixel X
@@ -208,7 +214,8 @@ void draw_scaled_bitmap_region(BITMAP* b, int sx, int sy, int sw, int sh, int dx
 /// Draw a scaled bitmap
 void draw_scaled_bitmap(BITMAP* b, int dx, int dy, float sx, float sy)
 {
-    
+    dy -= floorLevel;
+
     int x; // Screen X
     int y = dy; // Screen Y
     int px = 0; // Pixel X
@@ -232,6 +239,30 @@ void draw_scaled_bitmap(BITMAP* b, int dx, int dy, float sx, float sy)
         pxf = 0;
     } 
     
+}
+
+/// Draw text using a bitmap font
+void draw_text(BITMAP* b, Uint8* text, int len, int dx, int dy, int xoff, int yoff, bool center)
+{
+    int x = dx;
+    int y = dy;
+    int cw = b->w / 16;
+    int ch = b->h / 16;
+    int i=0;
+    Uint8 c;
+    int sx;
+    int sy;
+
+    for(; i < len && text[i] != '\0'; i++)
+    {
+        c = text[i];
+        sx = c % 16;
+        sy = c / 16;
+
+        draw_bitmap_region(b,sx*16,sy*16,cw,ch,x,y);
+
+        x += cw + xoff;
+    }
 }
 
 /// Draw triangle

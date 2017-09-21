@@ -6,5 +6,6 @@ bitmap hud assets/bitmaps/hud.png
 bitmap bg assets/bitmaps/bg.png
 bitmap hudText assets/bitmaps/hud_text.png
 bitmap hudElem assets/bitmaps/hud_elem.png
+bitmap font16 assets/bitmaps/font16.png
 # Tilemaps
 tilemap test assets/maps/test_room.tmx

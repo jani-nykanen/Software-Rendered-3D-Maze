@@ -64,7 +64,6 @@ void draw_bitmap(BITMAP* b, int dx, int dy);
 /// < dy Y coordinate
 void draw_bitmap_region(BITMAP* b, int sx, int sy, int sw, int sh, int dx, int dy);
 
-
 /// Draw a bitmap region
 /// < b Bitmap to be drawn
 /// < sx Source X
@@ -77,7 +76,6 @@ void draw_bitmap_region(BITMAP* b, int sx, int sy, int sw, int sh, int dx, int d
 /// < dh Destination h
 void draw_scaled_bitmap_region(BITMAP* b, int sx, int sy, int sw, int sh, int dx, int dy, int dw, int dh);
 
-
 /// Draw a scaled bitmap
 /// < b Bitmap to be drawn
 /// < dx X coordinate
@@ -85,6 +83,17 @@ void draw_scaled_bitmap_region(BITMAP* b, int sx, int sy, int sw, int sh, int dx
 /// < sx Scale X
 /// < sy Scale Y
 void draw_scaled_bitmap(BITMAP* b, int dx, int dy, float sx, float sy);
+
+/// Draw text using a bitmap font
+/// < b Bitmap font
+/// < text Text
+/// < len Text length
+/// < dx Destination x
+/// < dy Destination y
+/// < xoff X offset
+/// < yoff Y offset
+/// < center Center text
+void draw_text(BITMAP* b, Uint8* text, int len, int dx, int dy, int xoff, int yoff, bool center);
 
 /// Draw a triangle
 /// < x1 X coordinate of the first point

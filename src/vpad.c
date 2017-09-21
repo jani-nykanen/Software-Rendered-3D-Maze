@@ -3,8 +3,18 @@
 
 #include "vpad.h"
 
+/// Button object
+typedef struct
+{
+    int scancode;
+    int joybutton;
+}
+BUTTON;
+
 /// The good ol' gamepad stick
 static VEC2 stick;
+/// Buttons
+static BUTTON buttons[256];
 
 /// Initialize virtual gamepad
 void vpad_init()
@@ -42,4 +52,16 @@ void vpad_update()
     {
         stick.y = 1.0f;
     }
+}
+
+/// Add a new button
+void vpad_add_button(Uint8 index, int scancode, int joybutton)
+{
+    buttons[index] = (BUTTON){scancode,joybutton};
+}
+
+/// Get virtual pad button state
+int vpad_get_button(Uint8 index)
+{
+    return get_key_state(buttons[index].scancode);
 }

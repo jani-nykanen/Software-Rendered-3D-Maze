@@ -37,6 +37,8 @@ static int game_init()
     // Init vpad
     // TODO: Move to somewhere else, maybe?
     vpad_init();
+    vpad_add_button(0,(int)SDL_SCANCODE_LCTRL,0);
+    vpad_add_button(1,(int)SDL_SCANCODE_LSHIFT,1);
     
     return 0;
 }

@@ -132,7 +132,7 @@ void update_obj_control(CAMERA* cam, float tm)
 {
     player_update(&pl,tm);
     stage_get_player_collision(&pl);
-    player_set_camera(&pl,cam);
+    player_set_camera(&pl,cam,tm);
 
     // Calculate obj depth
     int i;

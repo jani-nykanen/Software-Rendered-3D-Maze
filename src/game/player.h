@@ -15,10 +15,15 @@ typedef struct
     VEC2 pos; /// Position
     VEC2 speed; /// Speed
     VEC2 target; /// Target speed
+    float totalSpeed; /// Speed vector Euclidean norm
     float angle; /// Angle, obviously
     float speedMul; /// Speed multiplier
     float maxSpeed; /// Maximum speed
+    float turnSpeed; /// Turning speed
     float radius; /// Hitbox radius
+    bool crouch; /// Is crouching
+    bool running; /// Is running
+    float bumpTimer; /// Bump is a good term for those running ups and downs
 }
 PLAYER;
 
@@ -35,7 +40,8 @@ void player_update(PLAYER* pl, float tm);
 /// Set camera to follow player
 /// < pl Player
 /// < cam Camera
-void player_set_camera(PLAYER* pl, CAMERA* cam);
+/// < tm Time mul.
+void player_set_camera(PLAYER* pl, CAMERA* cam, float tm);
 
 /// Get (wall) collision
 /// < pl Player to collide
