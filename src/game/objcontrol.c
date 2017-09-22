@@ -9,6 +9,7 @@
 #include "../engine/assets.h"
 
 #define NUM_OBJ 32
+#define NUM_DOORS 32
 
 /// Figure texture
 static BITMAP* bmpFigure;
@@ -19,6 +20,12 @@ static PLAYER pl;
 static OBJECT objs[NUM_OBJ];
 /// Object render order
 static int objDepth[NUM_OBJ];
+/// Object count
+static int objCount;
+/// Doors
+static DOOR doors[32];
+/// Door count
+static int doorCount;
 
 /// Put the objects in order by the depth values!
 static void sort_depth()
@@ -93,10 +100,25 @@ void add_object(VEC3 pos, float w, float h, BITMAP* tex)
             obj_bind_texture(&objs[i],tex,vec2(0.0f,0.0f),vec2(1.0f,1.0f));
             objs[i].exist = true;
 
+            objCount ++;
+
             return;
         }
     }
     
+}
+
+/// Add a door
+void add_door(VEC2 pos, bool horizontal, bool locked)
+{
+    if(doorCount >= NUM_DOORS)
+    {
+        printf("No more room for doors!\n");
+        return;
+    }
+
+    doors[doorCount] = create_door(pos,horizontal,locked);
+    doorCount ++;
 }
 
 /// Init object controller
@@ -113,6 +135,12 @@ void init_object_control()
     // Get required bitmaps
     bmpFigure = get_bitmap("figure");
 
+    // Init doors
+    init_doors();
+
+    objCount = 0;
+    doorCount = 0;
+
     // Add test objects
     add_object(vec3(0.5f,1.0f,2.0f),2.0f,2.0f,bmpFigure);
     add_object(vec3(1.5f,1.0f,0.5f),2.0f,2.0f,bmpFigure);
@@ -124,7 +152,6 @@ void init_object_control()
         objs[i].texDim = vec2(1.0f,0.25f);
         objs[i].angle = M_PI/2.0f * (float) (rand() % 4);
     }
-
 }
 
 /// Update object controller
@@ -134,9 +161,15 @@ void update_obj_control(CAMERA* cam, float tm)
     stage_get_player_collision(&pl);
     player_set_camera(&pl,cam,tm);
 
-    // Calculate obj depth
+    // Update doors
     int i;
-    for(i=0; i < NUM_OBJ; i++)
+    for(i = 0; i < doorCount; i++)
+    {
+        door_update(&doors[i],&pl,tm);
+    }
+
+    // Calculate obj depth
+    for(i=0; i < objCount; i++)
     {
         if(objs[i].exist)
         {
@@ -150,10 +183,18 @@ void update_obj_control(CAMERA* cam, float tm)
 }
 
 /// Draw object controller objects
-void draw_objects()
+void draw_objects(CAMERA* cam)
 {
     int i = 0;
-    for(; i < NUM_OBJ; i++)
+
+    // Draw doors
+    for(i = 0; i < doorCount; i++)
+    {
+        door_draw(&doors[i],cam);
+    }
+
+    // Draw objects
+    for(; i < objCount; i++)
     {
         if(objDepth[i] < 0)
         {

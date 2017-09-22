@@ -37,9 +37,10 @@ static int game_init()
     // Init vpad
     // TODO: Move to somewhere else, maybe?
     vpad_init();
-    vpad_add_button(0,(int)SDL_SCANCODE_LCTRL,0);
-    vpad_add_button(1,(int)SDL_SCANCODE_LSHIFT,1);
-    
+    vpad_add_button(0,(int)SDL_SCANCODE_LCTRL,1);
+    vpad_add_button(1,(int)SDL_SCANCODE_LSHIFT,2);
+    vpad_add_button(2,(int)SDL_SCANCODE_SPACE,0);
+
     return 0;
 }
 
@@ -62,7 +63,7 @@ static void game_draw()
 
     set_darkness(true,4.0f,8.0f);
     stage_draw(&cam);
-    draw_objects();
+    draw_objects(&cam);
     set_darkness(false,4.0f,8.0f);
 
     hud_draw();

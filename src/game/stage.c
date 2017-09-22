@@ -6,6 +6,8 @@
 #include "../engine/assets.h"
 #include "../engine/graphics.h"
 
+#include "objcontrol.h"
+
 /// Wall bitmap
 static BITMAP* bmpWall;
 /// Door bitmap
@@ -77,19 +79,30 @@ static void draw_tilemap(CAMERA* cam)
         for(x = sx; x <= ex; x++)
         {
             draw_tilemap_wall(x,y, map->layers[0] [y*map->w + x] );
+        }
+    }
+}
 
-            // TEMP
-            if(map->layers[1] [y*map->w + x] == 17)
+/// Parse map object layer
+static void parse_map_objects()
+{
+    int x = 0;
+    int y = 0;
+    Uint8 id;
+
+    for(; y < map->h; y++)
+    {
+        for(x=0; x < map->w; x++)
+        {
+            id = map->layers[1] [y*map->w + x];
+
+            if(id == 17)
             {
-                bind_texture(bmpDoor);
-                set_tex_area(0.0f,0.0f,0.5f,1.0f);
-                draw_wall(vec2(x*2.0f,y*2.0f+1.0f),vec2( x*2.0f + 1.0f,y*2.0f +1.0f),1.5f);
-
-                set_tex_area(0.5f,0.0f,0.5f,1.0f);
-                draw_wall(vec2(x*2.0f +1.0f,y*2.0f+1.0f),vec2( x*2.0f + 2.0f,y*2.0f +1.0f),1.5f);
-
-                bind_texture(bmpWall);
-                set_tex_area(0.0f,0.0f,1.0f,1.0f);
+                add_door(vec2(x*2.0f,y*2.0f),true,false);
+            }
+            else if(id == 18)
+            {
+                add_door(vec2(x*2.0f,y*2.0f),false,false);
             }
         }
     }
@@ -103,6 +116,7 @@ void init_stage()
     bmpBg = get_bitmap("bg");
 
     map = get_tilemap("test");
+    parse_map_objects();
 }
 
 /// Update stage
