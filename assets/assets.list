@@ -1,6 +1,7 @@
 # A list of assets
 # Bitmaps
 bitmap figure assets/bitmaps/figure.png
+bitmap plant assets/bitmaps/plant.png
 bitmap wall assets/bitmaps/wall.png
 bitmap door assets/bitmaps/door.png
 bitmap hud assets/bitmaps/hud.png

@@ -11,8 +11,11 @@
 typedef struct
 {
     VEC2 pos; /// Position
+    VEC2 pos1; /// Piece 1 pos
+    VEC2 pos2; /// Piece 2 pos
     bool opened; /// Is opened
     float angle; /// Door angle
+    float targetAngle; /// Door target angle
     bool horizontal; /// Is horizontal
     bool locked; /// Is locked
 }

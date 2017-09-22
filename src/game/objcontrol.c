@@ -13,6 +13,8 @@
 
 /// Figure texture
 static BITMAP* bmpFigure;
+/// Plant bitmap
+static BITMAP* bmpPlant;
 
 /// Player object
 static PLAYER pl;
@@ -127,13 +129,14 @@ void init_object_control()
     pl = create_player(vec2(-2.0f,-2.0f));
 
     int i = 0;
-    for(; i < 32; i++)
+    for(; i < NUM_OBJ; i++)
     {
         objs[i].exist = false;
     }
 
     // Get required bitmaps
     bmpFigure = get_bitmap("figure");
+    bmpPlant = get_bitmap("plant");
 
     // Init doors
     init_doors();
@@ -145,6 +148,7 @@ void init_object_control()
     add_object(vec3(0.5f,1.0f,2.0f),2.0f,2.0f,bmpFigure);
     add_object(vec3(1.5f,1.0f,0.5f),2.0f,2.0f,bmpFigure);
     add_object(vec3(2.25f,1.0f,1.25f),2.0f,2.0f,bmpFigure);
+    add_object(vec3(4.0f,1.0f,16.5f),2.0f,3.0f,bmpPlant);
 
     for(i=0; i < 3; i++)
     {
@@ -174,7 +178,11 @@ void update_obj_control(CAMERA* cam, float tm)
         if(objs[i].exist)
         {
             obj_calculate_depth(&objs[i]);
-            obj_map_by_angle(&objs[i],cam);
+
+            if(i < 3)
+            {
+                obj_map_by_angle(&objs[i],cam);
+            }
         }
     }
 
@@ -194,7 +202,7 @@ void draw_objects(CAMERA* cam)
     }
 
     // Draw objects
-    for(; i < objCount; i++)
+    for(i=0; i < objCount; i++)
     {
         if(objDepth[i] < 0)
         {
