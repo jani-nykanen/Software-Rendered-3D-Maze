@@ -33,9 +33,27 @@ DOOR create_door(VEC2 pos, bool horizontal, bool locked)
 /// Update the door and also take the player collision
 void door_update(DOOR*d, PLAYER* pl, float tm)
 {
+    float px = -pl->pos.x;
+    float py = -pl->pos.y;
+
     if(vpad_get_button(2) == PRESSED)
     {
-        d->opened = !d->opened;
+        if(d->horizontal)
+        {
+            if(px > d->pos.x-0.5f && px < d->pos.x+2.5f
+             && fabs(py-d->pos.y-1.0f) < 1.5f)
+             {
+                 d->opened = !d->opened;
+             }
+        }
+        else
+        {
+            if(py > d->pos.y-0.5f && py < d->pos.y+2.5f
+             && fabs(px-d->pos.x-1.0f) < 1.5f)
+             {
+                 d->opened = !d->opened;
+             }
+        }
     }
 
     if(!d->opened)
