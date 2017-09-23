@@ -15,6 +15,8 @@
 static BITMAP* bmpFigure;
 /// Plant bitmap
 static BITMAP* bmpPlant;
+/// Baby bitmap
+static BITMAP* bmpBaby;
 
 /// Player object
 static PLAYER pl;
@@ -137,6 +139,7 @@ void init_object_control()
     // Get required bitmaps
     bmpFigure = get_bitmap("figure");
     bmpPlant = get_bitmap("plant");
+    bmpBaby = get_bitmap("baby");
 
     // Init doors
     init_doors();
@@ -149,6 +152,7 @@ void init_object_control()
     add_object(vec3(1.5f,1.0f,0.5f),2.0f,2.0f,bmpFigure);
     add_object(vec3(2.25f,1.0f,1.25f),2.0f,2.0f,bmpFigure);
     add_object(vec3(4.0f,1.0f,16.5f),2.0f,3.0f,bmpPlant);
+    add_object(vec3(6.0f,1.0f,2.5f),1.25f,2.5f,bmpBaby);
 
     for(i=0; i < 3; i++)
     {
